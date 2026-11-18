@@ -1,0 +1,39 @@
+# Deploys the prod stage on every push to main.
+# Needs CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_API_TOKEN, MAX_UPLOAD_BYTES and WEBHOOK_KEY
+# as repository secrets, or as secrets of the GitHub environment "production",
+# which win over repository secrets of the same name and so give prod its own values.
+# provider check-env stops the job early when the Cloudflare credentials are missing.
+
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      MAX_UPLOAD_BYTES: ${{ secrets.MAX_UPLOAD_BYTES }}
+      WEBHOOK_KEY: ${{ secrets.WEBHOOK_KEY }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.22.3
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm alchemy provider check-env
+      - run: pnpm exec tsc
+      - run: pnpm alchemy deploy --stage prod --yes
