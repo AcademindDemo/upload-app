@@ -1,5 +1,5 @@
 import * as Cloudflare from "@alchemy.run/cloudflare";
-import { Effect, Schema } from "effect";
+import { Config, Effect, Redacted, Schema } from "effect";
 import { HttpRouter, HttpServerRequest, HttpServerResponse } from "effect/http";
 import { Uploads } from "./uploads.ts";
 
@@ -16,10 +16,15 @@ export default Cloudflare.Worker(
   { main: import.meta.url },
   Effect.gen(function* () {
     const uploads = yield* Cloudflare.R2.ReadWriteBucket(Uploads);
+    const maxUploadBytes = yield* Config.Number("MAX_UPLOAD_BYTES");
+    const webhookKey = yield* Config.Redacted("WEBHOOK_KEY");
 
     const store = Effect.gen(function* () {
       const { key } = yield* File;
       const headers = yield* Upload;
+      if (headers["content-length"] > maxUploadBytes) {
+        return HttpServerResponse.text("Too large", { status: 413 });
+      }
       const request = yield* HttpServerRequest.HttpServerRequest;
       yield* uploads.put(key, request.stream, { contentLength: headers["content-length"] });
       return HttpServerResponse.text("Stored", { status: 201 });
@@ -34,8 +39,21 @@ export default Cloudflare.Worker(
       return HttpServerResponse.text(yield* object.text());
     });
 
+    const webhook = Effect.gen(function* () {
+      const request = yield* HttpServerRequest.HttpServerRequest;
+      yield* Effect.log("webhook key:", webhookKey);
+      const signed = request.headers["x-webhook-key"] === Redacted.value(webhookKey);
+      return HttpServerResponse.text(signed ? "accepted" : "bad key", {
+        status: signed ? 200 : 401,
+      });
+    });
+
     const fetch = yield* HttpRouter.toHttpEffect(
-      HttpRouter.addAll([HttpRouter.route("PUT", "/:key", store), HttpRouter.route("GET", "/:key", read)]),
+      HttpRouter.addAll([
+        HttpRouter.route("POST", "/webhook", webhook),
+        HttpRouter.route("PUT", "/:key", store),
+        HttpRouter.route("GET", "/:key", read),
+      ]),
     );
 
     return {
