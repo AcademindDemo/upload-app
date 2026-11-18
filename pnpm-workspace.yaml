@@ -1,0 +1,4 @@
+allowBuilds:
+  workerd: true
+overrides:
+  unenv: 2.0.0-rc.24

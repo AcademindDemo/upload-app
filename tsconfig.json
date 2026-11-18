@@ -1,0 +1,15 @@
+{
+  "include": ["alchemy.run.ts", "src/**/*.ts"],
+  "compilerOptions": {
+    "noEmit": true,
+    "strict": true,
+    "exactOptionalPropertyTypes": true,
+    "module": "Preserve",
+    "moduleResolution": "Bundler",
+    "target": "ESNext",
+    "lib": ["ESNext"],
+    "allowImportingTsExtensions": true,
+    "skipLibCheck": true,
+    "types": ["node", "@cloudflare/workers-types"]
+  }
+}
