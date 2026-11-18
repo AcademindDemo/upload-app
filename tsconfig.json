@@ -1,5 +1,5 @@
 {
-  "include": ["alchemy.run.ts", "src/**/*.ts"],
+  "include": ["alchemy.run.ts", "src/**/*.ts", "test/**/*.ts"],
   "compilerOptions": {
     "noEmit": true,
     "strict": true,
