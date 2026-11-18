@@ -1,6 +1,7 @@
 import * as Alchemy from "alchemy";
 import * as Cloudflare from "@alchemy.run/cloudflare";
 import { Effect } from "effect";
+import { Uploads } from "./src/uploads.ts";
 import Worker from "./src/worker.ts";
 
 export default Alchemy.Stack(
@@ -10,6 +11,7 @@ export default Alchemy.Stack(
     state: Cloudflare.state(),
   },
   Effect.gen(function* () {
+    yield* Uploads;
     const worker = yield* Worker;
 
     return {
