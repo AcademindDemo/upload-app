@@ -1,8 +1,8 @@
-# Upload App: stages and outputs
+# Upload App: keeping the data
 
-The upload app from Alchemy: Fundamentals for TypeScript Developers, at the end of Section 4: the Stack returns the Worker's `url` and the bucket's `bucketName` as Outputs, and deploys to any stage, Alchemy 2.0.0-beta.87 and Effect 4.1.4.
+The upload app from Alchemy: Fundamentals for TypeScript Developers, at the end of `alf-keep-the-data` in Section 5, Alchemy 2.0.0-beta.87 and Effect 4.1.4. The `Uploads` bucket is retained (`Alchemy.RemovalPolicy.retain()`): a destroy or a removed declaration drops it from state and leaves the bucket and its files in your account, on every stage. The course's take is to retain production's bucket and keep the default on your own and disposable copies.
 
-Where you are in the course: stages from `alf-stages`, the two Outputs from `alf-outputs`, local runs from `alf-dev-locally`.
+Where you are in the course: logical IDs from `alf-logical-ids` and `alf-rename-a-resource`, `retain` and `forceDestroy` from `alf-keep-the-data`.
 
 ## Run it
 
