@@ -11,11 +11,8 @@ export default Alchemy.Stack(
     state: Cloudflare.state(),
   },
   Effect.gen(function* () {
-    yield* Uploads;
+    const bucket = yield* Uploads;
     const worker = yield* Worker;
-
-    return {
-      url: worker.url,
-    };
+    return { url: worker.url, bucketName: bucket.bucketName };
   }),
 );

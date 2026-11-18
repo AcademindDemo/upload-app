@@ -1,17 +1,19 @@
-# Upload App: storing files
+# Upload App: stages and outputs
 
-The upload app from Alchemy: Fundamentals for TypeScript Developers, at the end of Section 3: the Worker stores a `PUT`'s body in the R2 bucket `Uploads` under the path's key and reads it back on `GET`, Alchemy 2.0.0-beta.87 and Effect 4.1.4.
+The upload app from Alchemy: Fundamentals for TypeScript Developers, at the end of Section 4: the Stack returns the Worker's `url` and the bucket's `bucketName` as Outputs, and deploys to any stage, Alchemy 2.0.0-beta.87 and Effect 4.1.4.
 
-Where you are in the course: the bucket from `alf-add-a-bucket`, bound in `alf-bind-the-bucket`, routed in `alf-store-and-read-files` and its errors mapped to 400 and 500 in `alf-bucket-errors`.
+Where you are in the course: stages from `alf-stages`, the two Outputs from `alf-outputs`, local runs from `alf-dev-locally`.
 
 ## Run it
 
 ```sh
 pnpm install
 pnpm alchemy deploy
+pnpm alchemy deploy --stage preview
+pnpm alchemy dev
 ```
 
-Signed in once with `pnpm alchemy profile edit --add Cloudflare`, the deploy creates the bucket and updates the Worker. Then, with the printed URL:
+Signed in once with `pnpm alchemy profile edit --add Cloudflare`, the first deploy goes to your own stage, `live_<your user name>`, and prints both Outputs; `--stage preview` deploys a second, separate copy; `alchemy dev` runs the app on local stand-ins at `http://localhost:1337`. With a printed URL:
 
 ```sh
 curl -i -X PUT --data "Hello, World!" <url>/hello.txt
